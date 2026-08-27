@@ -73,6 +73,7 @@ public final class OriginDataHolder {
         this.entity = entity;
         this.data = data;
         this.access = entity.registryAccess();
+        this.data.resolvePendingData(this.access);
         this.helper = new PowerHelperImpl(this);
         this.cachedPowers = this.buildAllPowers();
     }
