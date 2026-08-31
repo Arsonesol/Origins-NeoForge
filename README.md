@@ -50,8 +50,3 @@ Special thanks to the following developers for ideas and some code:
 - **EdwinMindcraft** – Author of the [Forge port of Origins Mod](https://github.com/EdwinMindcraft/origins-forge), open source under the MIT license.  
 - **UltrusBot** – Author of [Alternate Origin GUI](https://github.com/UltrusBot/AltOriginGui), a better origin selection screen, open source under the MIT license.  
 - **ChrysanthCow** – Author of [Apugli](https://github.com/MerchantCalico/apugli), which extends actions, conditions and more, open source under the LGPL‑3.0 license.
-
-
-## Discord
-
-https://discord.gg/NDzz2upqAk
