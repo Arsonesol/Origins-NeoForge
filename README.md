@@ -1,5 +1,15 @@
 # Origins (NeoForge)
 
+This fork is a custom adaptation designed specifically for my personal server, with a primary focus on refining the dietary system to better complement food-expanding mods like Farmer's Delight.
+
+Key changes include:
+
+Enhanced Dietary Tags: I've retained the standard meat.json tag for meat-based dishes while introducing a new vegan.json tag to properly categorize meatless and plant-based meals. This creates a much more nuanced food classification system that feels more logical when dealing with diverse recipes.
+
+Disclaimer: Please be aware that this expanded tagging system may complicate or break compatibility with other mods that rely on the conventional, unified dietary structure. Use this fork with that in mind.
+
+Origin Balancing (Phantom): I've rebalanced the Phantom origin by making it a carnivore (meat-eater). In my opinion, this adjustment significantly improves overall game balance by giving the Phantom a distinct and fair dietary limitation that aligns better with its thematic identity and offsets its mobility advantages. 
+
 **This mod is still under construction, some functions may not work properly.**
 
 This mod is a full rewrite of the [Origins Mod](https://github.com/Apace100/origins-fabric) on NeoForge platform.
