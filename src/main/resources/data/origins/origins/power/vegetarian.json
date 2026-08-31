@@ -13,9 +13,12 @@
         }
       },
       {
-        "type": "origins:ingredient",
-        "ingredient": {
-          "tag": "origins:meat"
+        "type": "origins:not",
+        "condition": {
+          "type": "origins:ingredient",
+          "ingredient": {
+            "tag": "origins:vegan"
+          }
         }
       },
       {
