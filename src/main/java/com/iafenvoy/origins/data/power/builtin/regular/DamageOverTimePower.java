@@ -142,15 +142,17 @@ public class DamageOverTimePower extends Power {
         // A few older datapacks omit the slot declaration; retain the pre-1.21
         // armor behaviour as a compatibility fallback in that case.
         Map<EquipmentSlot, ItemStack> potentialItems = this.protectionEnchantment.get().value().getSlotItems(living);
-        if (potentialItems.isEmpty()) {
-            for (EquipmentSlot slot : EquipmentSlot.values()) {
-                if (slot.isArmor()) {
-                    ItemStack stack = living.getItemBySlot(slot);
-                    if (!stack.isEmpty()) potentialItems.put(slot, stack);
-                }
-            }
-        }
-        for (ItemStack stack : potentialItems.values()) {
+        // getSlotItems returns only non-empty stacks in slots declared by the
+        // enchantment. Older datapacks may have no slot declaration at all;
+        // in that case inspect the standard armor slots without mutating the
+        // map returned by vanilla (its mutability is not part of the API).
+        Iterable<ItemStack> armorItems = potentialItems.isEmpty()
+                ? java.util.stream.Stream.of(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET)
+                .map(living::getItemBySlot)
+                .filter(stack -> !stack.isEmpty())
+                .toList()
+                : potentialItems.values();
+        for (ItemStack stack : armorItems) {
             int level = EnchantmentHelper.getItemEnchantmentLevel(this.protectionEnchantment.get(), stack);
             accumulated += level;
             if (level > 0) items++;
