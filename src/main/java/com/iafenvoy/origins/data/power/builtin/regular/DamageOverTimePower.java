@@ -14,6 +14,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -138,7 +139,18 @@ public class DamageOverTimePower extends Power {
         int items = 0;
         // Respect the slots declared by the protection enchantment. The built-in
         // water protection enchantment declares the four standard armor slots.
-        for (ItemStack stack : this.protectionEnchantment.get().value().getSlotItems(living).values()) {
+        // A few older datapacks omit the slot declaration; retain the pre-1.21
+        // armor behaviour as a compatibility fallback in that case.
+        Map<EquipmentSlot, ItemStack> potentialItems = this.protectionEnchantment.get().value().getSlotItems(living);
+        if (potentialItems.isEmpty()) {
+            for (EquipmentSlot slot : EquipmentSlot.values()) {
+                if (slot.isArmor()) {
+                    ItemStack stack = living.getItemBySlot(slot);
+                    if (!stack.isEmpty()) potentialItems.put(slot, stack);
+                }
+            }
+        }
+        for (ItemStack stack : potentialItems.values()) {
             int level = EnchantmentHelper.getItemEnchantmentLevel(this.protectionEnchantment.get(), stack);
             accumulated += level;
             if (level > 0) items++;
