@@ -13,6 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -27,13 +28,21 @@ import java.util.Optional;
 
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class DamageOverTimePower extends Power {
+    /** The default damage type used by origins-math when the field is omitted. */
+    public static final net.minecraft.resources.ResourceKey<DamageType> GENERIC_DAMAGE =
+            net.minecraft.resources.ResourceKey.create(Registries.DAMAGE_TYPE,
+                    ResourceLocation.fromNamespaceAndPath(com.iafenvoy.origins.Origins.MOD_ID, "damage_over_time"));
+
     public static final MapCodec<DamageOverTimePower> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
             BaseSettings.CODEC.forGetter(Power::getSettings),
             Codec.INT.optionalFieldOf("interval", 20).forGetter(DamageOverTimePower::getInterval),
             Codec.INT.optionalFieldOf("onset_delay").forGetter(DamageOverTimePower::getOnsetDelay),
             Codec.FLOAT.fieldOf("damage").forGetter(DamageOverTimePower::getDamage),
             Codec.FLOAT.optionalFieldOf("damage_easy").forGetter(DamageOverTimePower::getDamageEasy),
-            DamageType.CODEC.fieldOf("damage_type").forGetter(DamageOverTimePower::getDamageType),
+            // Origins-math defaults this field to its generic damage type.
+            // Keep it optional and resolve the registry entry at damage time so
+            // datapack-provided damage types remain level-aware.
+            DamageType.CODEC.optionalFieldOf("damage_type").forGetter(DamageOverTimePower::getDamageType),
             Enchantment.CODEC.optionalFieldOf("protection_enchantment").forGetter(DamageOverTimePower::getProtectionEnchantment),
             Codec.FLOAT.optionalFieldOf("protection_effectiveness", 1.0F).forGetter(DamageOverTimePower::getProtectionEffectiveness)
     ).apply(i, DamageOverTimePower::new));
@@ -41,11 +50,11 @@ public class DamageOverTimePower extends Power {
     private final int interval;
     private final int onsetDelay;
     private final float damage, damageEasy;
-    private final Holder<DamageType> damageType;
+    private final Optional<Holder<DamageType>> damageType;
     private final Optional<Holder<Enchantment>> protectionEnchantment;
     private final float protectionEffectiveness;
 
-    public DamageOverTimePower(BaseSettings settings, int interval, Optional<Integer> onsetDelay, float damage, Optional<Float> damageEasy, Holder<DamageType> damageType, Optional<Holder<Enchantment>> protectionEnchantment, float protectionEffectiveness) {
+    public DamageOverTimePower(BaseSettings settings, int interval, Optional<Integer> onsetDelay, float damage, Optional<Float> damageEasy, Optional<Holder<DamageType>> damageType, Optional<Holder<Enchantment>> protectionEnchantment, float protectionEffectiveness) {
         super(settings);
         this.interval = interval;
         this.onsetDelay = onsetDelay.orElse(this.interval);
@@ -72,7 +81,7 @@ public class DamageOverTimePower extends Power {
         return Optional.of(this.damageEasy);
     }
 
-    public Holder<DamageType> getDamageType() {
+    public Optional<Holder<DamageType>> getDamageType() {
         return this.damageType;
     }
 
@@ -130,7 +139,8 @@ public class DamageOverTimePower extends Power {
 
     public void damage(OriginDataHolder holder) {
         Entity entity = holder.getEntity();
-        entity.hurt(new DamageSource(this.damageType), entity.level().getDifficulty() == Difficulty.EASY ? this.damageEasy : this.damage);
+        Holder<DamageType> type = this.damageType.orElseGet(() -> entity.level().registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(GENERIC_DAMAGE));
+        entity.hurt(new DamageSource(type), entity.level().getDifficulty() == Difficulty.EASY ? this.damageEasy : this.damage);
     }
 
     private int getProtection(Entity entity) {
