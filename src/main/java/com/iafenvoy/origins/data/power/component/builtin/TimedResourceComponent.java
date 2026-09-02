@@ -25,10 +25,10 @@ public final class TimedResourceComponent extends PowerComponent {
     public void set(double value, int duration) {
         this.value = value;
         // The source implementation expires when age > (setTick + duration).
-        // Components tick after entity events, so retain two extra states: one
-        // for the setting tick and one for the boundary tick itself. This also
-        // keeps duration=0 values visible until the next tick, matching source.
-        this.remaining = duration >= Integer.MAX_VALUE - 1 ? Integer.MAX_VALUE : Math.max(0, duration) + 2;
+        // The component is ticked after the entity's normal work, therefore
+        // duration + 1 keeps the value available on the setting tick and on
+        // the final boundary tick, then expires on the following tick.
+        this.remaining = duration >= Integer.MAX_VALUE ? Integer.MAX_VALUE : Math.max(0, duration) + 1;
         this.markDirty();
     }
 
