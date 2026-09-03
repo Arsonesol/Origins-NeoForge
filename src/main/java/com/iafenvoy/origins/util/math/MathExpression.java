@@ -26,7 +26,8 @@ public final class MathExpression {
         net.objecthunter.exp4j.Expression expression = this.compiled.get();
         for (String name : this.variableNames)
             expression.setVariable(name, variables.value(name, entity));
-        return expression.evaluate();
+        double result = expression.evaluate();
+        return Double.isFinite(result) ? result : 0D;
     }
 
     private net.objecthunter.exp4j.Expression build() {

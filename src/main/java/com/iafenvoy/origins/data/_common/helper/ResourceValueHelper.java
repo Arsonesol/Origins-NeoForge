@@ -73,6 +73,15 @@ public final class ResourceValueHelper {
         }
     }
 
+    public static boolean isMutableResource(Entity entity, ResourceLocation id) {
+        try {
+            ResourceAccess access = requireResource(entity, id);
+            return !(access.power instanceof ResourceValue resource) || resource.isMutable();
+        } catch (IllegalArgumentException ignored) {
+            return false;
+        }
+    }
+
     public static double valueOrThrow(Entity entity, ResourceLocation id) {
         ResourceAccess access = requireResource(entity, id);
         if (access.power instanceof ResourceValue resource) return resource.getDoubleValue(access.holder);
@@ -146,6 +155,7 @@ public final class ResourceValueHelper {
         double getDoubleValue(OriginDataHolder holder);
         double getDoubleMin(OriginDataHolder holder);
         double getDoubleMax(OriginDataHolder holder);
+        default boolean isMutable() { return true; }
         void setDoubleValue(OriginDataHolder holder, double value);
     }
 }

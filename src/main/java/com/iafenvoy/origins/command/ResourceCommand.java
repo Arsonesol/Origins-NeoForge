@@ -49,7 +49,7 @@ public final class ResourceCommand {
                                 .then(argument("target", EntityArgument.entity())
                                         .then(argument("power", ResourceLocationArgument.id())
                                                 .suggests(ResourceCommand::suggestResource)
-                                                .executes(ResourceCommand::get))))
+                                                .executes(ResourceCommand::absoluteGet))))
                         .then(argument("target", EntityArgument.entity())
                                 .then(argument("power", ResourceLocationArgument.id())
                                         .suggests(ResourceCommand::suggestResource)
@@ -60,10 +60,10 @@ public final class ResourceCommand {
                                         .then(argument("power", ResourceLocationArgument.id())
                                                 .suggests(ResourceCommand::suggestResource)
                                                 .then(argument("value", DoubleArgumentType.doubleArg())
-                                                        .executes(ResourceCommand::change)))))
+                                                        .executes(ResourceCommand::absoluteChange)))))
                         .then(argument("target", EntityArgument.entity())
                                 .then(argument("power", ResourceLocationArgument.id())
-                                        .suggests(ResourceCommand::suggestResource)
+                                        .suggests(ResourceCommand::suggestIntegerResource)
                                         .then(argument("value", DoubleArgumentType.doubleArg())
                                                 .executes(ResourceCommand::change)))))
                 .then(literal("operation")
@@ -121,6 +121,18 @@ public final class ResourceCommand {
         return 1;
     }
 
+    private static int absoluteGet(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        Entity target = EntityArgument.getEntity(context, "target");
+        ResourceLocation power = ResourceLocationArgument.getId(context, "power");
+        if (!ResourceValueHelper.hasResource(target, power)) {
+            context.getSource().sendFailure(Component.translatable("commands.origins.resource.missing_power", target.getName(), power.toString()));
+            return 0;
+        }
+        double value = ResourceValueHelper.value(target, power);
+        context.getSource().sendSuccess(() -> Component.translatable("commands.origins.resource.get.result", target.getName(), power.toString(), value), false);
+        return (int) value;
+    }
+
     private static int change(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         Entity target = EntityArgument.getEntity(context, "target");
         ResourceLocation power = ResourceLocationArgument.getId(context, "power");
@@ -135,10 +147,32 @@ public final class ResourceCommand {
         return 1;
     }
 
+    private static int absoluteChange(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        Entity target = EntityArgument.getEntity(context, "target");
+        ResourceLocation power = ResourceLocationArgument.getId(context, "power");
+        if (!ResourceValueHelper.hasResource(target, power)) {
+            context.getSource().sendFailure(Component.translatable("commands.origins.resource.missing_power", target.getName(), power.toString()));
+            return 0;
+        }
+        if (!ResourceValueHelper.isMutableResource(target, power)) {
+            context.getSource().sendFailure(Component.literal("Power " + power + " is not a modifiable resource."));
+            return 0;
+        }
+        double value = DoubleArgumentType.getDouble(context, "value");
+        ResourceValueHelper.addOrThrow(target, power, value);
+        OriginDataHolder.get(target).sync();
+        context.getSource().sendSuccess(() -> Component.translatable("commands.origins.resource.change.success", target.getName(), power.toString(), value, ResourceValueHelper.value(target, power)), true);
+        return 1;
+    }
+
     private static int operation(CommandContext<CommandSourceStack> context, Operation operation) throws CommandSyntaxException {
         Entity target = EntityArgument.getEntity(context, "target");
         ResourceLocation power = ResourceLocationArgument.getId(context, "power");
         OriginDataHolder holder = OriginDataHolder.get(target);
+        if (holder == null) {
+            context.getSource().sendFailure(Component.translatable("commands.origins.resource.missing_power", target.getName(), power.toString()));
+            return 0;
+        }
         ResourceHelper resource = getResourceComponent(holder, power, context);
         if (resource == null) return 0;
 
@@ -165,6 +199,16 @@ public final class ResourceCommand {
         if (resource != null) return resource;
         context.getSource().sendFailure(Component.translatable("commands.origins.resource.missing_power", holder.getEntity().getName(), power.toString()));
         return null;
+    }
+
+    private static CompletableFuture<Suggestions> suggestIntegerResource(final CommandContext<CommandSourceStack> context, final SuggestionsBuilder builder) throws CommandSyntaxException {
+        Entity target = EntityArgument.getEntity(context, "target");
+        OriginDataHolder holder = OriginDataHolder.get(target);
+        if (holder == null) return CompletableFuture.completedFuture(builder.build());
+        return SharedSuggestionProvider.suggestResource(holder.getAllPowers().stream()
+                .filter(power -> power.power() instanceof ResourceHelper)
+                .flatMap(PowerHolder::stream)
+                .map(PowerHolder::id), builder);
     }
 
     private static boolean isResource(PowerHolder power) {

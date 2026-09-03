@@ -17,6 +17,7 @@ public abstract class LinkedResourcePower extends Power implements ResourceValue
     @Override public final double getDoubleValue(OriginDataHolder holder) { return supply(holder); }
     @Override public double getDoubleMin(OriginDataHolder holder) { return supplyMin(holder); }
     @Override public double getDoubleMax(OriginDataHolder holder) { return supplyMax(holder); }
+    @Override public boolean isMutable() { return false; }
     @Override public void setDoubleValue(OriginDataHolder holder, double value) { }
     @Override public final MapCodec<? extends Power> codec() { return codecImpl(); }
     protected abstract MapCodec<? extends LinkedResourcePower> codecImpl();

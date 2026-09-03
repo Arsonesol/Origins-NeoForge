@@ -25,8 +25,7 @@ public record ForRangeAction(ResourceReference range, BlockAction action) implem
         // Block actions are invoked from an entity action/power in the common case.
         // Preserve that originating entity so resource-backed ranges can resolve
         // against the same holder instead of silently resolving to zero.
-        double resolved = this.range.resolve(BlockAction.executionEntity());
-        int count = Double.isNaN(resolved) || resolved <= 0 ? 0 : resolved >= Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) resolved;
+        int count = this.range.resolveIterations(BlockAction.executionEntity());
         for (int i = 0; i < count; i++) this.action.execute(level, pos, direction);
     }
 }

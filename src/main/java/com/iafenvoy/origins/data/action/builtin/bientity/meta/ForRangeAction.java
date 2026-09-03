@@ -18,8 +18,7 @@ public record ForRangeAction(ResourceReference range, BiEntityAction action) imp
 
     @Override
     public void execute(@NotNull Entity source, @NotNull Entity target) {
-        double resolved = this.range.resolve(source);
-        int count = Double.isNaN(resolved) || resolved <= 0 ? 0 : resolved >= Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) resolved;
+        int count = this.range.resolveIterations(source);
         for (int i = 0; i < count; i++) this.action.execute(source, target);
     }
 }

@@ -57,8 +57,8 @@ public final class DamageDealtLinkedResourcePower extends TimedLinkedResourcePow
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void recordDamage(LivingDamageEvent.Pre event) {
+    @SubscribeEvent
+    public static void recordDamage(LivingDamageEvent.Post event) {
         Entity source = event.getSource().getEntity();
         if (source == null) return;
         PowerHelper.get(source).execute(DamageDealtLinkedResourcePower.class,
