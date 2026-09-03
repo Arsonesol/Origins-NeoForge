@@ -16,7 +16,8 @@ import org.joml.Vector3f;
 import java.util.Locale;
 import java.util.function.BiFunction;
 
-public record AddVelocityAction(ResourceReference x, ResourceReference y, ResourceReference z, Reference reference, boolean client, boolean server,
+public record AddVelocityAction(ResourceReference x, ResourceReference y, ResourceReference z, Reference reference,
+                                boolean client, boolean server,
                                 boolean set) implements BiEntityAction {
     public static final MapCodec<AddVelocityAction> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
             ResourceReference.FLOAT_CODEC.optionalFieldOf("x", ResourceReference.number(0)).forGetter(AddVelocityAction::x),

@@ -4,7 +4,6 @@ import com.iafenvoy.origins.data._common.StatReference;
 import com.iafenvoy.origins.data.action.EntityAction;
 import com.iafenvoy.origins.util.codec.CombinedCodecs;
 import com.iafenvoy.origins.util.math.ResourceReference;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.server.level.ServerPlayer;

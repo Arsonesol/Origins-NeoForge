@@ -11,7 +11,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-/** A generic modifier holder for powers that consume modifiers through integrations. */
+/**
+ * A generic modifier holder for powers that consume modifiers through integrations.
+ */
 public final class SimpleModifyingPower extends Power implements ModifierPowerHelper {
     public static final MapCodec<SimpleModifyingPower> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             BaseSettings.CODEC.forGetter(Power::getSettings),

@@ -3,7 +3,6 @@ package com.iafenvoy.origins.data.action.builtin.entity;
 import com.iafenvoy.origins.data.action.EntityAction;
 import com.iafenvoy.origins.util.MiscUtil;
 import com.iafenvoy.origins.util.math.ResourceReference;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -18,7 +17,8 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
-public record FireProjectileAction(EntityType<?> entityType, ResourceReference divergence, ResourceReference speed, ResourceReference count,
+public record FireProjectileAction(EntityType<?> entityType, ResourceReference divergence, ResourceReference speed,
+                                   ResourceReference count,
                                    CompoundTag tag, EntityAction projectileAction) implements EntityAction {
     public static final MapCodec<FireProjectileAction> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
             BuiltInRegistries.ENTITY_TYPE.byNameCodec().fieldOf("entity_type").forGetter(FireProjectileAction::entityType),

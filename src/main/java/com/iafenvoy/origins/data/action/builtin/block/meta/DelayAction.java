@@ -7,6 +7,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,7 +28,7 @@ public record DelayAction(BlockAction action, ResourceReference ticks) implement
     public void execute(@NotNull Level level, @NotNull BlockPos pos, @NotNull Optional<Direction> direction) {
         double resolved = this.ticks.resolve(BlockAction.executionEntity());
         int ticks = resolved <= 0 ? 0 : resolved >= Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) resolved;
-        net.minecraft.world.entity.Entity entity = BlockAction.executionEntity();
+        Entity entity = BlockAction.executionEntity();
         Timeout.create(ticks, () -> {
             if (entity == null) this.action.execute(level, pos, direction);
             else BlockAction.executeWithContext(this.action, entity, level, pos, direction);

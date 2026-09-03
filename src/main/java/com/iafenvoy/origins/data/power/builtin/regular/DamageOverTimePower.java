@@ -1,5 +1,6 @@
 package com.iafenvoy.origins.data.power.builtin.regular;
 
+import com.iafenvoy.origins.Origins;
 import com.iafenvoy.origins.attachment.OriginDataHolder;
 import com.iafenvoy.origins.data.power.Power;
 import com.iafenvoy.origins.data.power.component.ComponentCollector;
@@ -9,6 +10,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageSource;
@@ -22,16 +24,20 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class DamageOverTimePower extends Power {
-    /** The default damage type used by origins-math when the field is omitted. */
-    public static final net.minecraft.resources.ResourceKey<DamageType> GENERIC_DAMAGE =
-            net.minecraft.resources.ResourceKey.create(Registries.DAMAGE_TYPE,
-                    ResourceLocation.fromNamespaceAndPath(com.iafenvoy.origins.Origins.MOD_ID, "damage_over_time"));
+    /**
+     * The default damage type used by origins-math when the field is omitted.
+     */
+    public static final ResourceKey<DamageType> GENERIC_DAMAGE =
+            ResourceKey.create(Registries.DAMAGE_TYPE,
+                    ResourceLocation.fromNamespaceAndPath(Origins.MOD_ID, "damage_over_time"));
 
     public static final MapCodec<DamageOverTimePower> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
             BaseSettings.CODEC.forGetter(Power::getSettings),
@@ -152,14 +158,14 @@ public class DamageOverTimePower extends Power {
         // A few older datapacks omit the slot declaration; retain the pre-1.21
         // armor behaviour as a compatibility fallback in that case.
         Map<EquipmentSlot, ItemStack> potentialItems = this.protectionEnchantment.get().value().getSlotItems(living);
-        boolean hasSlotDeclaration = java.util.Arrays.stream(EquipmentSlot.values())
+        boolean hasSlotDeclaration = Arrays.stream(EquipmentSlot.values())
                 .anyMatch(this.protectionEnchantment.get().value()::matchingSlot);
         // getSlotItems returns only non-empty stacks in slots declared by the
         // enchantment. Older datapacks may have no slot declaration at all;
         // in that case inspect the standard armor slots without mutating the
         // map returned by vanilla (its mutability is not part of the API).
         Iterable<ItemStack> armorItems = !hasSlotDeclaration
-                ? java.util.stream.Stream.of(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET)
+                ? Stream.of(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET)
                 .map(living::getItemBySlot)
                 .filter(stack -> !stack.isEmpty())
                 .toList()

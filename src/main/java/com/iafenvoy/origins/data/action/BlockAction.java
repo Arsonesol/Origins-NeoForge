@@ -28,7 +28,9 @@ public interface BlockAction {
 
     void execute(@NotNull Level level, @NotNull BlockPos pos, @NotNull Optional<Direction> direction);
 
-    /** Executes a block action while exposing the originating entity to dynamic values. */
+    /**
+     * Executes a block action while exposing the originating entity to dynamic values.
+     */
     static void executeWithContext(@NotNull BlockAction action, @NotNull Entity entity, @NotNull Level level,
                                    @NotNull BlockPos pos, @NotNull Optional<Direction> direction) {
         Entity previous = EXECUTION_ENTITY.get();

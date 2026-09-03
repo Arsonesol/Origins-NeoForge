@@ -21,8 +21,13 @@ public record VariableExecuteCommandAction(String command, String actorSelector,
             VariableSerializer.CODEC.optionalFieldOf("variables", new VariableSerializer(Map.of())).forGetter(VariableExecuteCommandAction::variables)
     ).apply(instance, VariableExecuteCommandAction::new));
 
-    @Override public @NotNull MapCodec<? extends BiEntityAction> codec() { return CODEC; }
-    @Override public void execute(@NotNull Entity source, @NotNull Entity target) {
+    @Override
+    public @NotNull MapCodec<? extends BiEntityAction> codec() {
+        return CODEC;
+    }
+
+    @Override
+    public void execute(@NotNull Entity source, @NotNull Entity target) {
         String parsed = VariableStringUtil.parse(this.command, this.variables, source)
                 .replace(this.actorSelector, source.getUUID().toString())
                 .replace(this.targetSelector, target.getUUID().toString());

@@ -2,6 +2,7 @@ package com.iafenvoy.origins.util.math;
 
 import com.iafenvoy.origins.attachment.OriginDataHolder;
 import com.iafenvoy.origins.data._common.helper.ResourceValueHelper;
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -16,22 +17,20 @@ import java.util.*;
 
 public record Modifier(double value, ModifierOperation operation, Optional<ResourceLocation> resource,
                        List<Modifier> modifier) {
-    public static final Codec<Modifier> CODEC = Codec.recursive(Modifier.class.getSimpleName(), codec -> {
-        // origins-math calls the numeric field "amount", while older Origins
-        // data used "value". Read both fields in one map codec: using two
-        // alternatives with optional fields is ambiguous because the first
-        // alternative would accept a legacy object with its default amount of
-        // zero. Encoding is canonicalized to the amount field below.
-        return modifierCodec(codec);
-    });
+    // origins-math calls the numeric field "amount", while older Origins
+    // data used "value". Read both fields in one map codec: using two
+    // alternatives with optional fields is ambiguous because the first
+    // alternative would accept a legacy object with its default amount of
+    // zero. Encoding is canonicalized to the amount field below.
+    public static final Codec<Modifier> CODEC = Codec.recursive(Modifier.class.getSimpleName(), Modifier::modifierCodec);
 
     private static Codec<Modifier> modifierCodec(Codec<Modifier> nested) {
-        return RecordCodecBuilder.<Modifier>create(i -> i.group(
+        return RecordCodecBuilder.create(i -> i.group(
                 Codec.DOUBLE.optionalFieldOf("amount").forGetter(modifier -> Optional.of(modifier.value())),
                 Codec.DOUBLE.optionalFieldOf("value").forGetter(modifier -> Optional.empty()),
                 ModifierOperation.CODEC.optionalFieldOf("operation", ModifierOperation.ADD_BASE_EARLY).forGetter(Modifier::operation),
                 ResourceLocation.CODEC.optionalFieldOf("resource").forGetter(Modifier::resource),
-                Codec.either(nested, nested.listOf()).xmap(value -> value.map(List::of, list -> list), value -> value.size() == 1 ? com.mojang.datafixers.util.Either.left(value.getFirst()) : com.mojang.datafixers.util.Either.right(value))
+                Codec.either(nested, nested.listOf()).xmap(value -> value.map(List::of, list -> list), value -> value.size() == 1 ? Either.left(value.getFirst()) : Either.right(value))
                         .optionalFieldOf("modifier", List.of()).forGetter(Modifier::modifier)
         ).apply(i, (amount, legacyValue, operation, resource, modifier) ->
                 new Modifier(amount.or(() -> legacyValue).orElse(0D), operation, resource, modifier)));
@@ -96,7 +95,9 @@ public record Modifier(double value, ModifierOperation operation, Optional<Resou
         MIN_TOTAL(Phase.TOTAL, 400),
         MAX_TOTAL(Phase.TOTAL, 500),
         SET_TOTAL(Phase.TOTAL, 600);
-        /** Accept both vanilla-style names and namespaced origins operation ids. */
+        /**
+         * Accept both vanilla-style names and namespaced origins operation ids.
+         */
         public static final Codec<ModifierOperation> CODEC = Codec.STRING.comapFlatMap(ModifierOperation::decode, ModifierOperation::getSerializedName);
 
         private static DataResult<ModifierOperation> decode(String serialized) {
@@ -128,9 +129,8 @@ public record Modifier(double value, ModifierOperation operation, Optional<Resou
             double sum = values.doubleStream().sum();
             return switch (this) {
                 case ADD_BASE_EARLY, ADD_BASE_LATE, ADD_TOTAL_EARLY, ADD_TOTAL_LATE -> current + sum;
-                case MULTIPLY_BASE_ADDITIVE -> current + base * sum;
+                case MULTIPLY_BASE_ADDITIVE, MULTIPLY_TOTAL_ADDITIVE -> current + base * sum;
                 case MULTIPLY_BASE_MULTIPLICATIVE, MULTIPLY_TOTAL_MULTIPLICATIVE -> current * (1.0 + sum);
-                case MULTIPLY_TOTAL_ADDITIVE -> current + base * sum;
                 case STANDARD_MULTIPLY_BASE, STANDARD_MULTIPLY_TOTAL -> current * sum;
                 case STANDARD_DIVIDE_BASE, STANDARD_DIVIDE_TOTAL -> current / sum;
                 case MIN_BASE, MIN_TOTAL -> values.doubleStream().reduce(current, Math::max);

@@ -2,7 +2,6 @@ package com.iafenvoy.origins.data.action.builtin.entity;
 
 import com.iafenvoy.origins.data.action.EntityAction;
 import com.iafenvoy.origins.util.math.ResourceReference;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.entity.Entity;
@@ -22,6 +21,7 @@ public record FeedAction(ResourceReference food, ResourceReference saturation) i
 
     @Override
     public void execute(@NotNull Entity source) {
-        if (source instanceof Player player) player.getFoodData().eat(this.food.resolveInt(source), this.saturation.resolveFloat(source));
+        if (source instanceof Player player)
+            player.getFoodData().eat(this.food.resolveInt(source), this.saturation.resolveFloat(source));
     }
 }

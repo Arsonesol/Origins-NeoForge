@@ -16,6 +16,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.effect.MobEffect;
@@ -146,9 +147,9 @@ public abstract class LivingEntityMixin extends Entity {
     @ModifyArgs(method = "knockback", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;setDeltaMovement(DDD)V"))
     private void origins$modifyKnockback(Args args) {
         LivingEntity self = this.origins$self();
-        args.set(0, ModifyKnockbackPower.modify(self, net.minecraft.core.Direction.Axis.X, args.get(0)));
-        args.set(1, ModifyKnockbackPower.modify(self, net.minecraft.core.Direction.Axis.Y, args.get(1)));
-        args.set(2, ModifyKnockbackPower.modify(self, net.minecraft.core.Direction.Axis.Z, args.get(2)));
+        args.set(0, ModifyKnockbackPower.modify(self, Direction.Axis.X, args.get(0)));
+        args.set(1, ModifyKnockbackPower.modify(self, Direction.Axis.Y, args.get(1)));
+        args.set(2, ModifyKnockbackPower.modify(self, Direction.Axis.Z, args.get(2)));
     }
 
     @ModifyReturnValue(method = "canBreatheUnderwater", at = @At("RETURN"))

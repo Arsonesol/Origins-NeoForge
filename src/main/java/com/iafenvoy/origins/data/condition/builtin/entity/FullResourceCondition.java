@@ -13,9 +13,13 @@ public record FullResourceCondition(ResourceLocation resource) implements Entity
             ResourceLocation.CODEC.fieldOf("resource").forGetter(FullResourceCondition::resource)
     ).apply(i, FullResourceCondition::new));
 
-    @Override public @NotNull MapCodec<? extends EntityCondition> codec() { return CODEC; }
+    @Override
+    public @NotNull MapCodec<? extends EntityCondition> codec() {
+        return CODEC;
+    }
 
-    @Override public boolean test(@NotNull Entity entity) {
+    @Override
+    public boolean test(@NotNull Entity entity) {
         try {
             return ResourceValueHelper.valueOrThrow(entity, this.resource) >= ResourceValueHelper.maxOrThrow(entity, this.resource);
         } catch (IllegalArgumentException ignored) {

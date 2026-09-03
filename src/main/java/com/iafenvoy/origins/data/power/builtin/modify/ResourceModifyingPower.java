@@ -1,6 +1,5 @@
 package com.iafenvoy.origins.data.power.builtin.modify;
 
-import com.iafenvoy.origins.attachment.OriginDataHolder;
 import com.iafenvoy.origins.data._common.helper.ModifierPowerHelper;
 import com.iafenvoy.origins.data.power.Power;
 import com.iafenvoy.origins.util.codec.CombinedCodecs;
@@ -23,13 +22,35 @@ public abstract class ResourceModifyingPower extends Power implements ModifierPo
     ).apply(i, (resource, modifier, modifiers) -> new Settings(resource, modifier, mergeModifiers(modifier, modifiers))));
     protected final ResourceLocation resource;
     protected final List<Modifier> modifiers;
-    protected ResourceModifyingPower(BaseSettings settings, ResourceLocation resource, List<Modifier> modifiers) { super(settings); this.resource = resource; this.modifiers = modifiers; }
-    public ResourceLocation getResource() { return resource; }
-    @Override public List<Modifier> getModifier() { return modifiers; }
-    public boolean appliesTo(ResourceLocation id) { return resource.equals(id); }
-    @Override public @NotNull MapCodec<? extends Power> codec() { return codecImpl(); }
+
+    protected ResourceModifyingPower(BaseSettings settings, ResourceLocation resource, List<Modifier> modifiers) {
+        super(settings);
+        this.resource = resource;
+        this.modifiers = modifiers;
+    }
+
+    public ResourceLocation getResource() {
+        return this.resource;
+    }
+
+    @Override
+    public List<Modifier> getModifier() {
+        return this.modifiers;
+    }
+
+    public boolean appliesTo(ResourceLocation id) {
+        return this.resource.equals(id);
+    }
+
+    @Override
+    public @NotNull MapCodec<? extends Power> codec() {
+        return this.codecImpl();
+    }
+
     protected abstract MapCodec<? extends ResourceModifyingPower> codecImpl();
-    public record Settings(ResourceLocation resource, java.util.Optional<Modifier> modifier, List<Modifier> modifiers) {}
+
+    public record Settings(ResourceLocation resource, Optional<Modifier> modifier, List<Modifier> modifiers) {
+    }
 
     private static List<Modifier> mergeModifiers(Optional<Modifier> modifier, List<Modifier> modifiers) {
         List<Modifier> result = new ArrayList<>();

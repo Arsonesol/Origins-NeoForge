@@ -13,9 +13,13 @@ public record EmptyResourceCondition(ResourceLocation resource) implements Entit
             ResourceLocation.CODEC.fieldOf("resource").forGetter(EmptyResourceCondition::resource)
     ).apply(i, EmptyResourceCondition::new));
 
-    @Override public @NotNull MapCodec<? extends EntityCondition> codec() { return CODEC; }
+    @Override
+    public @NotNull MapCodec<? extends EntityCondition> codec() {
+        return CODEC;
+    }
 
-    @Override public boolean test(@NotNull Entity entity) {
+    @Override
+    public boolean test(@NotNull Entity entity) {
         try {
             return ResourceValueHelper.valueOrThrow(entity, this.resource) <= ResourceValueHelper.minOrThrow(entity, this.resource);
         } catch (IllegalArgumentException ignored) {

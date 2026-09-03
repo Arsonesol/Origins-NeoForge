@@ -9,7 +9,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingHealEvent;
-import org.jetbrains.annotations.NotNull;
 
 @EventBusSubscriber
 public final class HealingLinkedResourcePower extends TimedLinkedResourcePower {
@@ -18,9 +17,20 @@ public final class HealingLinkedResourcePower extends TimedLinkedResourcePower {
             EntityAction.optionalCodec("entity_action").forGetter(HealingLinkedResourcePower::action)
     ).apply(instance, HealingLinkedResourcePower::new));
     private final EntityAction action;
-    public HealingLinkedResourcePower(BaseSettings settings, int duration, EntityAction action) { super(settings, duration); this.action = action; }
-    public EntityAction action() { return action; }
-    @Override protected MapCodec<? extends LinkedResourcePower> codecImpl() { return CODEC; }
+
+    public HealingLinkedResourcePower(BaseSettings settings, int duration, EntityAction action) {
+        super(settings, duration);
+        this.action = action;
+    }
+
+    public EntityAction action() {
+        return this.action;
+    }
+
+    @Override
+    protected MapCodec<? extends LinkedResourcePower> codecImpl() {
+        return CODEC;
+    }
 
     @SubscribeEvent
     public static void recordHealing(LivingHealEvent event) {

@@ -1,7 +1,6 @@
 package com.iafenvoy.origins.data.power.builtin.regular;
 
 import com.iafenvoy.origins.attachment.OriginDataHolder;
-import com.iafenvoy.origins.data._common.helper.ResourceValueHelper;
 import com.iafenvoy.origins.data.power.component.ComponentCollector;
 import com.iafenvoy.origins.data.power.component.builtin.TimedResourceComponent;
 
@@ -13,7 +12,9 @@ abstract class TimedLinkedResourcePower extends LinkedResourcePower {
         this.duration = duration;
     }
 
-    public int duration() { return this.duration; }
+    public int duration() {
+        return this.duration;
+    }
 
     @Override
     public void createComponents(ComponentCollector collector) {

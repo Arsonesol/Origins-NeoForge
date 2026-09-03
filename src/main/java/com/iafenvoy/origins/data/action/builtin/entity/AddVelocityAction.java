@@ -13,7 +13,8 @@ import org.joml.Vector3f;
 
 import java.util.function.Consumer;
 
-public record AddVelocityAction(ResourceReference x, ResourceReference y, ResourceReference z, Space space, boolean set) implements EntityAction {
+public record AddVelocityAction(ResourceReference x, ResourceReference y, ResourceReference z, Space space,
+                                boolean set) implements EntityAction {
     public static final MapCodec<AddVelocityAction> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
             ResourceReference.FLOAT_CODEC.optionalFieldOf("x", ResourceReference.number(0)).forGetter(AddVelocityAction::x),
             ResourceReference.FLOAT_CODEC.optionalFieldOf("y", ResourceReference.number(0)).forGetter(AddVelocityAction::y),

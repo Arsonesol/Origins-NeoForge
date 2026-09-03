@@ -13,7 +13,9 @@ import net.minecraft.nbt.NumericTag;
 
 import java.util.Map;
 
-/** Reads a numeric NBT path after expanding resource variables in the path string. */
+/**
+ * Reads a numeric NBT path after expanding resource variables in the path string.
+ */
 public final class VariableNbtLinkedResourcePower extends LinkedResourcePower {
     public static final MapCodec<VariableNbtLinkedResourcePower> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             BaseSettings.CODEC.forGetter(Power::getSettings),
@@ -30,8 +32,13 @@ public final class VariableNbtLinkedResourcePower extends LinkedResourcePower {
         this.variables = variables;
     }
 
-    public String path() { return this.path; }
-    public VariableSerializer variables() { return this.variables; }
+    public String path() {
+        return this.path;
+    }
+
+    public VariableSerializer variables() {
+        return this.variables;
+    }
 
     @Override
     protected double supply(OriginDataHolder holder) {
@@ -44,5 +51,8 @@ public final class VariableNbtLinkedResourcePower extends LinkedResourcePower {
         }
     }
 
-    @Override protected MapCodec<? extends LinkedResourcePower> codecImpl() { return CODEC; }
+    @Override
+    protected MapCodec<? extends LinkedResourcePower> codecImpl() {
+        return CODEC;
+    }
 }

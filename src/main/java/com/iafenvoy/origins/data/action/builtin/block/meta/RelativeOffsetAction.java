@@ -1,7 +1,6 @@
 package com.iafenvoy.origins.data.action.builtin.block.meta;
 
 import com.iafenvoy.origins.data.action.BlockAction;
-import com.mojang.serialization.Codec;
 import com.iafenvoy.origins.util.math.ResourceReference;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

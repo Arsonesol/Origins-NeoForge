@@ -9,7 +9,9 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import org.jetbrains.annotations.NotNull;
 
-/** Persists the active and inactive durations used by {@link DamageOverTimePower}. */
+/**
+ * Persists the active and inactive durations used by {@link DamageOverTimePower}.
+ */
 public final class DamageOverTimeComponent extends PowerComponent {
     public static final MapCodec<DamageOverTimeComponent> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.INT.optionalFieldOf("in_damage_ticks", 0).forGetter(DamageOverTimeComponent::inDamageTicks),

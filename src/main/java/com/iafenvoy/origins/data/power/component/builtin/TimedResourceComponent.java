@@ -8,7 +8,9 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import org.jetbrains.annotations.NotNull;
 
-/** Holds a temporary numeric value for linked event resources. */
+/**
+ * Holds a temporary numeric value for linked event resources.
+ */
 public final class TimedResourceComponent extends PowerComponent {
     public static final MapCodec<TimedResourceComponent> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.DOUBLE.optionalFieldOf("value", 0D).forGetter(TimedResourceComponent::value),
@@ -18,17 +20,30 @@ public final class TimedResourceComponent extends PowerComponent {
     private double value;
     private int remaining;
 
-    public TimedResourceComponent() { this(0D, 0); }
-    public TimedResourceComponent(double value, int remaining) { this.value = value; this.remaining = remaining; }
-    public double value() { return this.remaining > 0 ? this.value : 0D; }
-    public int remaining() { return this.remaining; }
+    public TimedResourceComponent() {
+        this(0D, 0);
+    }
+
+    public TimedResourceComponent(double value, int remaining) {
+        this.value = value;
+        this.remaining = remaining;
+    }
+
+    public double value() {
+        return this.remaining > 0 ? this.value : 0D;
+    }
+
+    public int remaining() {
+        return this.remaining;
+    }
+
     public void set(double value, int duration) {
         this.value = value;
         // The source implementation expires when age > (setTick + duration).
         // The component is ticked after the entity's normal work, therefore
         // duration + 1 keeps the value available on the setting tick and on
         // the final boundary tick, then expires on the following tick.
-        this.remaining = duration >= Integer.MAX_VALUE ? Integer.MAX_VALUE : Math.max(0, duration) + 1;
+        this.remaining = duration == Integer.MAX_VALUE ? Integer.MAX_VALUE : Math.max(0, duration) + 1;
         this.markDirty();
     }
 
@@ -39,5 +54,8 @@ public final class TimedResourceComponent extends PowerComponent {
         if (this.remaining == 0) this.markDirty();
     }
 
-    @Override public @NotNull MapCodec<? extends PowerComponent> codec() { return CODEC; }
+    @Override
+    public @NotNull MapCodec<? extends PowerComponent> codec() {
+        return CODEC;
+    }
 }

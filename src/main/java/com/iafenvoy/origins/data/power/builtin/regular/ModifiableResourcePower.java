@@ -11,7 +11,6 @@ import com.iafenvoy.origins.data.power.component.builtin.ResourceComponent;
 import com.iafenvoy.origins.data.power.builtin.modify.ModifyResourceMaximumPower;
 import com.iafenvoy.origins.data.power.builtin.modify.ModifyResourceMinimumPower;
 import com.iafenvoy.origins.util.codec.MiscCodecs;
-import com.iafenvoy.origins.util.math.Modifier;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -20,7 +19,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 import java.util.OptionalInt;
 
-/** A resource whose bounds are modified by active resource modifier powers. */
+/**
+ * A resource whose bounds are modified by active resource modifier powers.
+ */
 public final class ModifiableResourcePower extends Power implements HudRenderable, ResourceValueHelper.ResourceValue {
     public static final MapCodec<ModifiableResourcePower> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             BaseSettings.CODEC.forGetter(Power::getSettings),
@@ -59,14 +60,39 @@ public final class ModifiableResourcePower extends Power implements HudRenderabl
         this.maxAction = maxAction;
     }
 
-    @Override public int getMinValue() { return this.min; }
-    @Override public int getMaxValue() { return this.max; }
-    public OptionalInt getStartValue() { return this.startValue; }
-    public boolean enforceLimits() { return this.enforceLimits; }
-    public boolean retainValue() { return this.retainValue; }
-    public Optional<HudRender> hudRender() { return this.hudRender; }
-    public EntityAction minAction() { return this.minAction; }
-    public EntityAction maxAction() { return this.maxAction; }
+    @Override
+    public int getMinValue() {
+        return this.min;
+    }
+
+    @Override
+    public int getMaxValue() {
+        return this.max;
+    }
+
+    public OptionalInt getStartValue() {
+        return this.startValue;
+    }
+
+    public boolean enforceLimits() {
+        return this.enforceLimits;
+    }
+
+    public boolean retainValue() {
+        return this.retainValue;
+    }
+
+    public Optional<HudRender> hudRender() {
+        return this.hudRender;
+    }
+
+    public EntityAction minAction() {
+        return this.minAction;
+    }
+
+    public EntityAction maxAction() {
+        return this.maxAction;
+    }
 
     @Override
     public void createComponents(ComponentCollector collector) {
@@ -105,7 +131,8 @@ public final class ModifiableResourcePower extends Power implements HudRenderabl
         int requested = (int) value;
         int minimum = (int) this.getDoubleMin(holder);
         int maximum = (int) this.getDoubleMax(holder);
-        if (this.retainValue && (requested < minimum || requested > maximum) && (previous < minimum || previous > maximum)) return;
+        if (this.retainValue && (requested < minimum || requested > maximum) && (previous < minimum || previous > maximum))
+            return;
         int actual = Math.clamp(requested, minimum, maximum);
         if (previous == actual) return;
         component.setValue(actual);
@@ -113,10 +140,33 @@ public final class ModifiableResourcePower extends Power implements HudRenderabl
         if (actual == maximum && this.maxAction != null) this.maxAction.execute(holder.getEntity());
     }
 
-    @Override public int getValue(OriginDataHolder holder) { return (int) this.getDoubleValue(holder); }
-    @Override public void setValue(OriginDataHolder holder, int value) { this.setDoubleValue(holder, value); }
-    @Override public Power getPowerForHudRender() { return this; }
-    @Override public Optional<HudRender> getHudRenderData() { return this.hudRender; }
-    @Override public float getRenderPercentage(OriginDataHolder holder) { return HudRenderable.clampProgress((float) this.getDoubleValue(holder), (float) this.getDoubleMin(holder), (float) this.getDoubleMax(holder)); }
-    @Override public @NotNull MapCodec<? extends Power> codec() { return CODEC; }
+    @Override
+    public int getValue(OriginDataHolder holder) {
+        return (int) this.getDoubleValue(holder);
+    }
+
+    @Override
+    public void setValue(OriginDataHolder holder, int value) {
+        this.setDoubleValue(holder, value);
+    }
+
+    @Override
+    public Power getPowerForHudRender() {
+        return this;
+    }
+
+    @Override
+    public Optional<HudRender> getHudRenderData() {
+        return this.hudRender;
+    }
+
+    @Override
+    public float getRenderPercentage(OriginDataHolder holder) {
+        return HudRenderable.clampProgress((float) this.getDoubleValue(holder), (float) this.getDoubleMin(holder), (float) this.getDoubleMax(holder));
+    }
+
+    @Override
+    public @NotNull MapCodec<? extends Power> codec() {
+        return CODEC;
+    }
 }

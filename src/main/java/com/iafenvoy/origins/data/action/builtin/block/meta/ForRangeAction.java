@@ -18,7 +18,9 @@ public record ForRangeAction(ResourceReference range, BlockAction action) implem
     ).apply(instance, ForRangeAction::new));
 
     @Override
-    public @NotNull MapCodec<? extends BlockAction> codec() { return CODEC; }
+    public @NotNull MapCodec<? extends BlockAction> codec() {
+        return CODEC;
+    }
 
     @Override
     public void execute(@NotNull Level level, @NotNull BlockPos pos, @NotNull Optional<Direction> direction) {

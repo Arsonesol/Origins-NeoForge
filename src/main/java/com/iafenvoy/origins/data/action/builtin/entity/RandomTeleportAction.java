@@ -3,7 +3,6 @@ package com.iafenvoy.origins.data.action.builtin.entity;
 import com.iafenvoy.origins.data.action.EntityAction;
 import com.iafenvoy.origins.data.condition.BlockCondition;
 import com.iafenvoy.origins.data.condition.EntityCondition;
-import com.iafenvoy.origins.util.codec.MiscCodecs;
 import com.iafenvoy.origins.util.math.ResourceReference;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -22,10 +21,10 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
-import java.util.OptionalInt;
 
 //FIXME::Optimize
-public record RandomTeleportAction(ResourceReference areaWidth, ResourceReference areaHeight, Optional<Heightmap.Types> heightmap,
+public record RandomTeleportAction(ResourceReference areaWidth, ResourceReference areaHeight,
+                                   Optional<Heightmap.Types> heightmap,
                                    Optional<ResourceReference> attempts, Optional<BlockCondition> landingBlockCondition,
                                    Optional<EntityCondition> landingCondition, Vec3 landingOffset,
                                    boolean loadedChunksOnly, EntityAction successAction,

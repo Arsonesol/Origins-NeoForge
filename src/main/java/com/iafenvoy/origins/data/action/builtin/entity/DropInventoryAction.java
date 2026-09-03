@@ -18,7 +18,8 @@ import java.util.Optional;
 
 public record DropInventoryAction(Optional<PowerReference> power, EntityAction entityAction, ItemAction itemAction,
                                   ItemCondition itemCondition, IntList slot, boolean throwRandomly,
-                                  boolean retainOwnership, ResourceReference amount) implements EntityAction, InventoryActionHelper {
+                                  boolean retainOwnership,
+                                  ResourceReference amount) implements EntityAction, InventoryActionHelper {
     public static final MapCodec<DropInventoryAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             PowerReference.CODEC.optionalFieldOf("power").forGetter(DropInventoryAction::power),
             EntityAction.optionalCodec("entity_action").forGetter(DropInventoryAction::entityAction),

@@ -18,11 +18,42 @@ public class AttributeLikeResourcePower extends Power implements ResourceValueHe
             BaseSettings.CODEC.forGetter(Power::getSettings), Codec.DOUBLE.fieldOf("min").forGetter(x -> x.min), Codec.DOUBLE.fieldOf("max").forGetter(x -> x.max), MiscCodecs.doubleValue("start_value").forGetter(x -> OptionalDouble.of(x.start))
     ).apply(i, (settings, min, max, start) -> new AttributeLikeResourcePower(settings, min, max, start.orElse(min))));
     private final double min, max, start;
-    public AttributeLikeResourcePower(BaseSettings settings, double min, double max, double start) { super(settings); this.min = min; this.max = max; this.start = start; }
-    @Override public void createComponents(ComponentCollector collector) { super.createComponents(collector); collector.add(new DoubleResourceComponent(start, min, max)); }
-    @Override public double getDoubleValue(OriginDataHolder h) { return h.getComponentFor(this, DoubleResourceComponent.class).map(DoubleResourceComponent::getValue).orElse(start); }
-    @Override public double getDoubleMin(OriginDataHolder h) { return min; }
-    @Override public double getDoubleMax(OriginDataHolder h) { return max; }
-    @Override public void setDoubleValue(OriginDataHolder h, double value) { h.getComponentFor(this, DoubleResourceComponent.class).ifPresent(c -> c.setValue(value)); }
-    @Override public @NotNull MapCodec<? extends Power> codec() { return CODEC; }
+
+    public AttributeLikeResourcePower(BaseSettings settings, double min, double max, double start) {
+        super(settings);
+        this.min = min;
+        this.max = max;
+        this.start = start;
+    }
+
+    @Override
+    public void createComponents(ComponentCollector collector) {
+        super.createComponents(collector);
+        collector.add(new DoubleResourceComponent(this.start, this.min, this.max));
+    }
+
+    @Override
+    public double getDoubleValue(OriginDataHolder h) {
+        return h.getComponentFor(this, DoubleResourceComponent.class).map(DoubleResourceComponent::getValue).orElse(this.start);
+    }
+
+    @Override
+    public double getDoubleMin(OriginDataHolder h) {
+        return this.min;
+    }
+
+    @Override
+    public double getDoubleMax(OriginDataHolder h) {
+        return this.max;
+    }
+
+    @Override
+    public void setDoubleValue(OriginDataHolder h, double value) {
+        h.getComponentFor(this, DoubleResourceComponent.class).ifPresent(c -> c.setValue(value));
+    }
+
+    @Override
+    public @NotNull MapCodec<? extends Power> codec() {
+        return CODEC;
+    }
 }

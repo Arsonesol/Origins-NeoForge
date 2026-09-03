@@ -3,7 +3,6 @@ package com.iafenvoy.origins.data.action.builtin.entity;
 import com.iafenvoy.origins.data.action.EntityAction;
 import com.iafenvoy.origins.util.codec.CombinedCodecs;
 import com.iafenvoy.origins.util.math.ResourceReference;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.server.level.ServerLevel;
@@ -15,7 +14,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public record SpawnEffectCloudAction(ResourceReference radius, ResourceReference radiusOnUse, ResourceReference waitTime,
+public record SpawnEffectCloudAction(ResourceReference radius, ResourceReference radiusOnUse,
+                                     ResourceReference waitTime,
                                      List<MobEffectInstance> effect) implements EntityAction {
     public static final MapCodec<SpawnEffectCloudAction> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
             ResourceReference.FLOAT_CODEC.optionalFieldOf("radius", ResourceReference.number(3)).forGetter(SpawnEffectCloudAction::radius),

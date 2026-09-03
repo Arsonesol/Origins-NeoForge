@@ -12,7 +12,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 
-public record MobEffectCondition(Holder<MobEffect> effect, ResourceReference minAmplifier, ResourceReference maxAmplifier, ResourceReference minDuration,
+public record MobEffectCondition(Holder<MobEffect> effect, ResourceReference minAmplifier,
+                                 ResourceReference maxAmplifier, ResourceReference minDuration,
                                  ResourceReference maxDuration, boolean inverted) implements EntityCondition {
     public static final MapCodec<MobEffectCondition> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
             MobEffect.CODEC.fieldOf("effect").forGetter(MobEffectCondition::effect),

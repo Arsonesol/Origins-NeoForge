@@ -13,11 +13,13 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Map;
+
 public final class VariableChangeResourceAction implements EntityAction {
     public static final MapCodec<VariableChangeResourceAction> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
             ResourceLocation.CODEC.fieldOf("resource").forGetter(VariableChangeResourceAction::resource),
             Codec.STRING.fieldOf("expression").forGetter(VariableChangeResourceAction::expression),
-            VariableSerializer.CODEC.optionalFieldOf("variables", new VariableSerializer(java.util.Map.of())).forGetter(VariableChangeResourceAction::variables),
+            VariableSerializer.CODEC.optionalFieldOf("variables", new VariableSerializer(Map.of())).forGetter(VariableChangeResourceAction::variables),
             ResourceOperation.CODEC.optionalFieldOf("operation", ResourceOperation.ADD).forGetter(VariableChangeResourceAction::operation)
     ).apply(i, VariableChangeResourceAction::new));
     private final ResourceLocation resource;
@@ -34,13 +36,29 @@ public final class VariableChangeResourceAction implements EntityAction {
         this.parsedExpression = new MathExpression(expression, variables.variables().keySet());
     }
 
-    public ResourceLocation resource() { return this.resource; }
-    public String expression() { return this.expression; }
-    public VariableSerializer variables() { return this.variables; }
-    public ResourceOperation operation() { return this.operation; }
+    public ResourceLocation resource() {
+        return this.resource;
+    }
 
-    @Override public @NotNull MapCodec<? extends EntityAction> codec() { return CODEC; }
-    @Override public void execute(@NotNull Entity source) {
+    public String expression() {
+        return this.expression;
+    }
+
+    public VariableSerializer variables() {
+        return this.variables;
+    }
+
+    public ResourceOperation operation() {
+        return this.operation;
+    }
+
+    @Override
+    public @NotNull MapCodec<? extends EntityAction> codec() {
+        return CODEC;
+    }
+
+    @Override
+    public void execute(@NotNull Entity source) {
         if (!(source instanceof LivingEntity)) return;
         double change = this.parsedExpression.evaluate(source, this.variables);
         if (this.operation == ResourceOperation.ADD)

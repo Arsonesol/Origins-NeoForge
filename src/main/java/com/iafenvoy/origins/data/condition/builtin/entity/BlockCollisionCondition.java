@@ -2,7 +2,6 @@ package com.iafenvoy.origins.data.condition.builtin.entity;
 
 import com.iafenvoy.origins.data.condition.EntityCondition;
 import com.iafenvoy.origins.util.math.ResourceReference;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
@@ -12,7 +11,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 
-public record BlockCollisionCondition(ResourceReference offsetX, ResourceReference offsetY, ResourceReference offsetZ) implements EntityCondition {
+public record BlockCollisionCondition(ResourceReference offsetX, ResourceReference offsetY,
+                                      ResourceReference offsetZ) implements EntityCondition {
     public static final MapCodec<BlockCollisionCondition> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
             ResourceReference.FLOAT_CODEC.optionalFieldOf("offset_x", ResourceReference.number(0)).forGetter(BlockCollisionCondition::offsetX),
             ResourceReference.FLOAT_CODEC.optionalFieldOf("offset_y", ResourceReference.number(0)).forGetter(BlockCollisionCondition::offsetY),

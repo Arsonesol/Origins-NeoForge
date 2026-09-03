@@ -2,7 +2,6 @@ package com.iafenvoy.origins.data.action.builtin.entity;
 
 import com.iafenvoy.origins.data.action.EntityAction;
 import com.iafenvoy.origins.util.math.ResourceReference;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.entity.Entity;
@@ -21,6 +20,7 @@ public record GainAirAction(ResourceReference amount) implements EntityAction {
 
     @Override
     public void execute(@NotNull Entity source) {
-        if (source instanceof Player player) player.setAirSupply(player.getAirSupply() + this.amount.resolveInt(source));
+        if (source instanceof Player player)
+            player.setAirSupply(player.getAirSupply() + this.amount.resolveInt(source));
     }
 }

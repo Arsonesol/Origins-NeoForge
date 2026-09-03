@@ -7,7 +7,6 @@ import com.iafenvoy.origins.data.condition.ItemCondition;
 import com.iafenvoy.origins.data.power.reference.PowerReference;
 import com.iafenvoy.origins.util.codec.CombinedCodecs;
 import com.iafenvoy.origins.util.math.ResourceReference;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.ints.IntList;

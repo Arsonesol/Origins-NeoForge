@@ -2,7 +2,6 @@ package com.iafenvoy.origins.data.action.builtin.item;
 
 import com.iafenvoy.origins.data.action.ItemAction;
 import com.iafenvoy.origins.util.codec.CombinedCodecs;
-import com.iafenvoy.origins.util.codec.MiscCodecs;
 import com.iafenvoy.origins.util.math.ResourceReference;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -19,7 +18,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.OptionalInt;
 
 public record RemoveEnchantmentAction(List<Holder<Enchantment>> enchantment, Optional<ResourceReference> level,
                                       boolean resetRepairCost) implements ItemAction {

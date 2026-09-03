@@ -1,7 +1,6 @@
 package com.iafenvoy.origins.data.action.builtin.block.meta;
 
 import com.iafenvoy.origins.data.action.BlockAction;
-import com.mojang.serialization.Codec;
 import com.iafenvoy.origins.util.math.ResourceReference;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -13,7 +12,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
-public record AbsoluteOffsetAction(BlockAction action, ResourceReference x, ResourceReference y, ResourceReference z) implements BlockAction {
+public record AbsoluteOffsetAction(BlockAction action, ResourceReference x, ResourceReference y,
+                                   ResourceReference z) implements BlockAction {
     public static final MapCodec<AbsoluteOffsetAction> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
             BlockAction.CODEC.fieldOf("action").forGetter(AbsoluteOffsetAction::action),
             ResourceReference.INT_CODEC.optionalFieldOf("x", ResourceReference.number(0)).forGetter(AbsoluteOffsetAction::x),

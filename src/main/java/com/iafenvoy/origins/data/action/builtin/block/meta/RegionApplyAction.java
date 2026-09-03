@@ -4,7 +4,6 @@ import com.iafenvoy.origins.data.action.BlockAction;
 import com.iafenvoy.origins.data.condition.BlockCondition;
 import com.iafenvoy.origins.util.math.Shape;
 import com.iafenvoy.origins.util.math.ResourceReference;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;

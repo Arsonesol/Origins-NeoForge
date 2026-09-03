@@ -1,20 +1,24 @@
 package com.iafenvoy.origins.data._common.helper;
 
 import com.iafenvoy.origins.attachment.OriginDataHolder;
-import com.iafenvoy.origins.attachment.PowerHelper;
 import com.iafenvoy.origins.data.power.Power;
+import com.iafenvoy.origins.data.power.builtin.regular.AttributeLikeResourcePower;
 import com.iafenvoy.origins.data.power.reference.PowerHolder;
 import com.iafenvoy.origins.data.power.builtin.modify.ModifyAttributeLikeResourcePower;
 import com.iafenvoy.origins.util.math.Modifier;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-/** Resolves an entity's power resource without exposing the attachment internals to codecs. */
+/**
+ * Resolves an entity's power resource without exposing the attachment internals to codecs.
+ */
 public final class ResourceValueHelper {
-    private ResourceValueHelper() {}
+    private ResourceValueHelper() {
+    }
 
     public static Optional<Power> findPower(Entity entity, ResourceLocation id) {
         OriginDataHolder holder = OriginDataHolder.get(entity);
@@ -109,7 +113,7 @@ public final class ResourceValueHelper {
     public static void addOrThrow(Entity entity, ResourceLocation id, double value) {
         ResourceAccess access = requireResource(entity, id);
         double change = value;
-        if (access.power instanceof com.iafenvoy.origins.data.power.builtin.regular.AttributeLikeResourcePower)
+        if (access.power instanceof AttributeLikeResourcePower)
             change = access.holder.getHelper().modify(ModifyAttributeLikeResourcePower.class, power -> power.appliesTo(id), value);
         if (access.power instanceof ResourceValue resource) {
             resource.setDoubleValue(access.holder, resource.getDoubleValue(access.holder) + change);
@@ -124,7 +128,7 @@ public final class ResourceValueHelper {
     private static Optional<Power> powerFor(OriginDataHolder holder, ResourceLocation id) {
         return holder.getAllPowers().stream()
                 .filter(power -> power.id().equals(id)
-                        || java.util.Objects.equals(power.power().getId(holder.getAccess()), id))
+                        || Objects.equals(power.power().getId(holder.getAccess()), id))
                 .map(PowerHolder::power)
                 .findFirst();
     }
@@ -142,20 +146,30 @@ public final class ResourceValueHelper {
     private record ResourceAccess(OriginDataHolder holder, Power power) {
     }
 
-    /** Applies all matching power modifiers as one ordered modifier set. */
+    /**
+     * Applies all matching power modifiers as one ordered modifier set.
+     */
     public static <T extends Power & ModifierPowerHelper> double applyModifiers(OriginDataHolder holder, Class<T> type,
-                                                                                 Predicate<T> filter, double base) {
+                                                                                Predicate<T> filter, double base) {
         return Modifier.applyModifiers(holder, holder.getHelper().listActive(type, filter).stream()
                 .flatMap(power -> power.getModifier().stream())
                 .toList(), base);
     }
 
-    /** Optional double-precision resource contract used by origins-math powers. */
+    /**
+     * Optional double-precision resource contract used by origins-math powers.
+     */
     public interface ResourceValue {
         double getDoubleValue(OriginDataHolder holder);
+
         double getDoubleMin(OriginDataHolder holder);
+
         double getDoubleMax(OriginDataHolder holder);
-        default boolean isMutable() { return true; }
+
+        default boolean isMutable() {
+            return true;
+        }
+
         void setDoubleValue(OriginDataHolder holder, double value);
     }
 }

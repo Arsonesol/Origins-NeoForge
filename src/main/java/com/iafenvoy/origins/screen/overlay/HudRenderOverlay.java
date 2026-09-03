@@ -22,6 +22,8 @@ import net.neoforged.neoforge.common.NeoForgeMod;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
+import java.util.Map;
+import java.util.Optional;
 
 @OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(Dist.CLIENT)
@@ -45,12 +47,11 @@ public enum HudRenderOverlay implements LayeredDraw.Layer {
         int iconSize = 8;
 
         for (HudRenderable h : holder.streamPowers(HudRenderable.class)
-                .map(h -> java.util.Map.entry(h, h.getHudRenderData().map(render -> render.getActive(player, h.shouldRender(holder))).orElse(null)))
-                .filter(entry -> entry.getValue() != null)
+                .map(h -> Map.entry(h, h.getHudRenderData().map(render -> render.getActive(player, h.shouldRender(holder))).orElse(null)))
                 .sorted(Comparator.comparingDouble(entry -> entry.getValue().order().resolve(player)))
-                .map(java.util.Map.Entry::getKey)
+                .map(Map.Entry::getKey)
                 .toList()) {
-            HudRender render = h.getHudRenderData().flatMap(data -> java.util.Optional.ofNullable(data.getActive(player, h.shouldRender(holder)))).orElse(null);
+            HudRender render = h.getHudRenderData().flatMap(data -> Optional.ofNullable(data.getActive(player, h.shouldRender(holder)))).orElse(null);
             if (render == null)
                 continue;
             //Rendering

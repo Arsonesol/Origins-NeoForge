@@ -91,15 +91,15 @@ public record RaycastAction(RaycastSettings settings, EntityAction beforeAction,
     }
 
     public record CommandInfo(Optional<String> commandAtHit, Optional<ResourceReference> commandHitOffset,
-                              Optional<String> commandAlongRay, ResourceReference commandStep, boolean commandAlongRayOnlyOnHit) {
+                              Optional<String> commandAlongRay, ResourceReference commandStep,
+                              boolean commandAlongRayOnlyOnHit) {
         private static final MapCodec<CommandInfo> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
                 Codec.STRING.optionalFieldOf("command_at_hit").forGetter(CommandInfo::commandAtHit),
                 ResourceReference.CODEC.optionalFieldOf("command_hit_offset").forGetter(CommandInfo::commandHitOffset),
                 Codec.STRING.optionalFieldOf("command_along_ray").forGetter(CommandInfo::commandAlongRay),
                 ResourceReference.CODEC.optionalFieldOf("command_step", ResourceReference.number(1)).forGetter(CommandInfo::commandStep),
                 Codec.BOOL.optionalFieldOf("command_along_ray_only_on_hit", false).forGetter(CommandInfo::commandAlongRayOnlyOnHit)
-        ).apply(instance, (commandAtHit, commandHitOffset, commandAlongRay, commandStep, commandAlongRayOnlyOnHit) ->
-                new CommandInfo(commandAtHit, commandHitOffset, commandAlongRay, commandStep, commandAlongRayOnlyOnHit)));
+        ).apply(instance, CommandInfo::new));
     }
 
     public record HitAction(BlockAction blockAction, EntityAction hitAction, EntityAction missAction,

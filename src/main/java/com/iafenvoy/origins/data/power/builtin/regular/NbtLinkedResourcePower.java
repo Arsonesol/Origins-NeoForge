@@ -8,7 +8,9 @@ import net.minecraft.commands.arguments.NbtPathArgument;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NumericTag;
 
-/** Reads a numeric value from the holder's serialized entity NBT. */
+/**
+ * Reads a numeric value from the holder's serialized entity NBT.
+ */
 public final class NbtLinkedResourcePower extends LinkedResourcePower {
     public static final MapCodec<NbtLinkedResourcePower> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             BaseSettings.CODEC.forGetter(Power::getSettings),
@@ -22,7 +24,9 @@ public final class NbtLinkedResourcePower extends LinkedResourcePower {
         this.path = path;
     }
 
-    public NbtPathArgument.NbtPath path() { return this.path; }
+    public NbtPathArgument.NbtPath path() {
+        return this.path;
+    }
 
     @Override
     protected double supply(OriginDataHolder holder) {
@@ -34,5 +38,8 @@ public final class NbtLinkedResourcePower extends LinkedResourcePower {
         }
     }
 
-    @Override protected MapCodec<? extends LinkedResourcePower> codecImpl() { return CODEC; }
+    @Override
+    protected MapCodec<? extends LinkedResourcePower> codecImpl() {
+        return CODEC;
+    }
 }

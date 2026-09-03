@@ -6,7 +6,9 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/** Expands origins-math resource variables in command strings. */
+/**
+ * Expands origins-math resource variables in command strings.
+ */
 public final class VariableStringUtil {
     private static final Pattern INTERPOLATION = Pattern.compile("\\$:(?<simple>[A-Za-z_][A-Za-z0-9_]*)|\\$\\{(?<name>[A-Za-z_][A-Za-z0-9_]*)(?::%(?:d|\\.(?<precision>[0-9]{1,2})f)|:%(?<legacyPrecision>[0-9]{1,2})f)?}");
 
@@ -15,7 +17,7 @@ public final class VariableStringUtil {
 
     public static String parse(String value, VariableSerializer variables, Entity entity) {
         Matcher matcher = INTERPOLATION.matcher(value);
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         while (matcher.find()) {
             String name = matcher.group("simple") != null ? matcher.group("simple") : matcher.group("name");
             if (!variables.hasVariable(name))

@@ -14,8 +14,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
-public record SpawnParticlesAction(ParticleOptions particle, BiEntityCondition biEntityCondition, ResourceReference count,
-                                   ResourceReference speed, boolean force, Vec3 spread, ResourceReference offsetX, ResourceReference offsetY,
+public record SpawnParticlesAction(ParticleOptions particle, BiEntityCondition biEntityCondition,
+                                   ResourceReference count,
+                                   ResourceReference speed, boolean force, Vec3 spread, ResourceReference offsetX,
+                                   ResourceReference offsetY,
                                    ResourceReference offsetZ) implements EntityAction {
     public static final MapCodec<SpawnParticlesAction> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
             MiscCodecs.PARTICLE_OPTION_OR_SINGLE.fieldOf("particle").forGetter(SpawnParticlesAction::particle),

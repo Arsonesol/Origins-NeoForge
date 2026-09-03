@@ -15,7 +15,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,12 +31,35 @@ public final class DamageTakenLinkedResourcePower extends TimedLinkedResourcePow
     private final DamageCondition damageCondition;
     private final BiEntityAction action;
     private final List<Modifier> modifiers;
-    public DamageTakenLinkedResourcePower(BaseSettings settings, int duration, DamageCondition damageCondition, BiEntityAction action, List<Modifier> modifiers) { super(settings, duration); this.damageCondition = damageCondition; this.action = action; this.modifiers = modifiers; }
-    public DamageCondition damageCondition() { return damageCondition; }
-    public BiEntityAction action() { return action; }
-    @Override public List<Modifier> getModifier() { return modifiers; }
-    private ModifierSettings modifierSettings() { return new ModifierSettings(Optional.empty(), this.modifiers); }
-    @Override protected MapCodec<? extends LinkedResourcePower> codecImpl() { return CODEC; }
+
+    public DamageTakenLinkedResourcePower(BaseSettings settings, int duration, DamageCondition damageCondition, BiEntityAction action, List<Modifier> modifiers) {
+        super(settings, duration);
+        this.damageCondition = damageCondition;
+        this.action = action;
+        this.modifiers = modifiers;
+    }
+
+    public DamageCondition damageCondition() {
+        return this.damageCondition;
+    }
+
+    public BiEntityAction action() {
+        return this.action;
+    }
+
+    @Override
+    public List<Modifier> getModifier() {
+        return this.modifiers;
+    }
+
+    private ModifierSettings modifierSettings() {
+        return new ModifierSettings(Optional.empty(), this.modifiers);
+    }
+
+    @Override
+    protected MapCodec<? extends LinkedResourcePower> codecImpl() {
+        return CODEC;
+    }
 
     private record ModifierSettings(Optional<Modifier> modifier, List<Modifier> modifiers) {
         private static final MapCodec<ModifierSettings> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
@@ -71,7 +93,7 @@ public final class DamageTakenLinkedResourcePower extends TimedLinkedResourcePow
         Entity target = event.getEntity();
         PowerHelper helper = PowerHelper.get(target);
         List<Modifier> modifiers = helper.listActive(DamageTakenLinkedResourcePower.class).stream()
-                .flatMap(power -> power.getModifier().stream())
+                .flatMap(power -> power.modifiers.stream())
                 .toList();
         event.setNewDamage(helper.applyModifiers(modifiers, event.getNewDamage()));
     }

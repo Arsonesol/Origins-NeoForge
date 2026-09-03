@@ -7,12 +7,17 @@ import com.iafenvoy.origins.util.math.VariableSerializer;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-/** A read-only resource calculated from an exp4j expression. */
+
+import java.util.Map;
+
+/**
+ * A read-only resource calculated from an exp4j expression.
+ */
 public final class MathResourcePower extends LinkedResourcePower {
     public static final MapCodec<MathResourcePower> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             BaseSettings.CODEC.forGetter(Power::getSettings),
             Codec.STRING.fieldOf("expression").forGetter(MathResourcePower::expression),
-            VariableSerializer.CODEC.optionalFieldOf("variables", new VariableSerializer(java.util.Map.of())).forGetter(MathResourcePower::variables)
+            VariableSerializer.CODEC.optionalFieldOf("variables", new VariableSerializer(Map.of())).forGetter(MathResourcePower::variables)
     ).apply(instance, MathResourcePower::new));
 
     private final String expression;

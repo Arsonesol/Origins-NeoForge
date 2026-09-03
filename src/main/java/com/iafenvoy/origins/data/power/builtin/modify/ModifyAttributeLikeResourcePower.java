@@ -7,11 +7,19 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
+import java.util.Optional;
 
 public final class ModifyAttributeLikeResourcePower extends ResourceModifyingPower {
     public static final MapCodec<ModifyAttributeLikeResourcePower> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
-            BaseSettings.CODEC.forGetter(Power::getSettings), ResourceModifyingPower.SETTINGS_CODEC.forGetter(x -> new Settings(x.resource, java.util.Optional.empty(), x.modifiers))
+            BaseSettings.CODEC.forGetter(Power::getSettings), SETTINGS_CODEC.forGetter(x -> new Settings(x.resource, Optional.empty(), x.modifiers))
     ).apply(i, (settings, value) -> new ModifyAttributeLikeResourcePower(settings, value.resource(), value.modifiers())));
-    public ModifyAttributeLikeResourcePower(BaseSettings settings, ResourceLocation resource, List<Modifier> modifiers) { super(settings, resource, modifiers); }
-    @Override protected MapCodec<? extends ResourceModifyingPower> codecImpl() { return CODEC; }
+
+    public ModifyAttributeLikeResourcePower(BaseSettings settings, ResourceLocation resource, List<Modifier> modifiers) {
+        super(settings, resource, modifiers);
+    }
+
+    @Override
+    protected MapCodec<? extends ResourceModifyingPower> codecImpl() {
+        return CODEC;
+    }
 }

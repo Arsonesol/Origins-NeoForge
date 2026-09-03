@@ -17,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Optional;
-import java.util.OptionalInt;
 
 public record ModifyBlockStateAction(String property, ResourceOperation operation, Optional<ResourceReference> change,
                                      OptionalBoolean value, Optional<String> enumValue,

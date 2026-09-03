@@ -1,6 +1,7 @@
 package com.iafenvoy.origins.util.math;
 
 import net.minecraft.world.entity.Entity;
+import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 
 import java.util.Set;
@@ -12,7 +13,7 @@ import java.util.Set;
 public final class MathExpression {
     private final String source;
     private final Set<String> variableNames;
-    private final ThreadLocal<net.objecthunter.exp4j.Expression> compiled;
+    private final ThreadLocal<Expression> compiled;
 
     public MathExpression(String source, Set<String> variableNames) {
         this.source = source.trim();
@@ -23,14 +24,14 @@ public final class MathExpression {
     }
 
     public double evaluate(Entity entity, VariableSerializer variables) {
-        net.objecthunter.exp4j.Expression expression = this.compiled.get();
+        Expression expression = this.compiled.get();
         for (String name : this.variableNames)
             expression.setVariable(name, variables.value(name, entity));
         double result = expression.evaluate();
         return Double.isFinite(result) ? result : 0D;
     }
 
-    private net.objecthunter.exp4j.Expression build() {
+    private Expression build() {
         return new ExpressionBuilder(this.source)
                 .variables(this.variableNames)
                 .build();
