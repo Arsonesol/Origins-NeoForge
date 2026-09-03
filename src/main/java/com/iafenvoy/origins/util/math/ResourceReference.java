@@ -14,7 +14,6 @@ public record ResourceReference(Either<Double, ResourceLocation> value) {
             .xmap(value -> value.map(number -> ResourceReference.number(number.doubleValue()), ResourceReference::resource), ResourceReference::toIntValue);
     public static final Codec<ResourceReference> FLOAT_CODEC = Codec.either(Codec.FLOAT, ResourceLocation.CODEC)
             .xmap(value -> value.map(number -> ResourceReference.number(number.doubleValue()), ResourceReference::resource), ResourceReference::toFloatValue);
-    public static final MapCodec<ResourceReference> FIELD_CODEC = CODEC.fieldOf("change");
 
     public static ResourceReference number(double value) { return new ResourceReference(Either.left(value)); }
     public static ResourceReference resource(ResourceLocation value) { return new ResourceReference(Either.right(value)); }

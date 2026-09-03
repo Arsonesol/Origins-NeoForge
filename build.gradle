@@ -19,7 +19,6 @@ group = mod_group_id
 
 configurations {
     runtimeClasspath.extendsFrom localRuntime
-    originsMathRuntime
 }
 
 repositories {
@@ -78,10 +77,6 @@ neoForge {
         data {
             data()
 
-            // Data runs use a dedicated legacy classpath. Keep mXparser there so
-            // expression-backed powers can be loaded by the data generator.
-            getAdditionalRuntimeClasspathConfiguration().extendsFrom(configurations.originsMathRuntime)
-
             // example of overriding the workingDirectory set in configureEach above, uncomment if you want to use it
             // gameDirectory = project.file('run-data')
 
@@ -126,12 +121,9 @@ dependencies {
     implementation jarJar("maven.modrinth:integration:$integration_version")
     implementation jarJar("maven.modrinth:AdditionalEntityAttributes:6oJLT6m7")
     implementation jarJar("maven.modrinth:caelus:KsfI4QsR")
+    implementation jarJar("net.objecthunter:exp4j:0.4.8")
 
     implementation "maven.modrinth:jupiter:Jpcw76rq"
-    // Keep the parser on the compile/runtime classpath; jarJar alone only embeds it in the distribution.
-    implementation "org.mariuszgromada.math:MathParser.org-mXparser:6.0.0"
-    originsMathRuntime "org.mariuszgromada.math:MathParser.org-mXparser:6.0.0"
-    implementation jarJar("org.mariuszgromada.math:MathParser.org-mXparser:6.0.0")
 
     compileOnly "maven.modrinth:bedsheet:HbBAModY"
 }
