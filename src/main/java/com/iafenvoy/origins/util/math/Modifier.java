@@ -2,7 +2,6 @@ package com.iafenvoy.origins.util.math;
 
 import com.iafenvoy.origins.attachment.OriginDataHolder;
 import com.iafenvoy.origins.data._common.helper.ResourceValueHelper;
-import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -19,26 +18,23 @@ public record Modifier(double value, ModifierOperation operation, Optional<Resou
                        List<Modifier> modifier) {
     public static final Codec<Modifier> CODEC = Codec.recursive(Modifier.class.getSimpleName(), codec -> {
         // origins-math calls the numeric field "amount", while older Origins
-        // data used "value". Decode both forms and always encode the canonical
-        // amount form. The two alternatives also preserve the required-field
-        // validation instead of silently accepting a malformed modifier.
-        Codec<Modifier> amount = modifierCodec(codec, "amount");
-        Codec<Modifier> legacy = modifierCodec(codec, "value");
-        return Codec.either(amount, legacy).xmap(pair -> pair.map(x -> x, x -> x), modifier -> Either.left(modifier));
+        // data used "value". Read both fields in one map codec: using two
+        // alternatives with optional fields is ambiguous because the first
+        // alternative would accept a legacy object with its default amount of
+        // zero. Encoding is canonicalized to the amount field below.
+        return modifierCodec(codec);
     });
 
-    private static Codec<Modifier> modifierCodec(Codec<Modifier> nested, String valueField) {
+    private static Codec<Modifier> modifierCodec(Codec<Modifier> nested) {
         return RecordCodecBuilder.<Modifier>create(i -> i.group(
-                // A modifier may use either a literal amount or another resource
-                // as its value.  The source origins-math format makes both
-                // fields alternatives; using a default here keeps resource-only
-                // modifiers decodable while preserving the legacy value form.
-                Codec.DOUBLE.optionalFieldOf(valueField, 0D).forGetter(Modifier::value),
+                Codec.DOUBLE.optionalFieldOf("amount").forGetter(modifier -> Optional.of(modifier.value())),
+                Codec.DOUBLE.optionalFieldOf("value").forGetter(modifier -> Optional.empty()),
                 ModifierOperation.CODEC.optionalFieldOf("operation", ModifierOperation.ADD_BASE_EARLY).forGetter(Modifier::operation),
                 ResourceLocation.CODEC.optionalFieldOf("resource").forGetter(Modifier::resource),
-                Codec.either(nested, nested.listOf()).xmap(value -> value.map(List::of, list -> list), value -> value.size() == 1 ? Either.left(value.getFirst()) : Either.right(value))
+                Codec.either(nested, nested.listOf()).xmap(value -> value.map(List::of, list -> list), value -> value.size() == 1 ? com.mojang.datafixers.util.Either.left(value.getFirst()) : com.mojang.datafixers.util.Either.right(value))
                         .optionalFieldOf("modifier", List.of()).forGetter(Modifier::modifier)
-        ).apply(i, Modifier::new));
+        ).apply(i, (amount, legacyValue, operation, resource, modifier) ->
+                new Modifier(amount.or(() -> legacyValue).orElse(0D), operation, resource, modifier)));
     }
 
     public double getValue(OriginDataHolder holder) {

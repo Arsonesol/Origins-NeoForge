@@ -1,6 +1,7 @@
 package com.iafenvoy.origins.data.action.builtin.block;
 
 import com.iafenvoy.origins.data.action.BlockAction;
+import com.iafenvoy.origins.util.math.ResourceReference;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -11,9 +12,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
-public record ScheduleTickAction(int delay) implements BlockAction {
+public record ScheduleTickAction(ResourceReference delay) implements BlockAction {
     public static final MapCodec<ScheduleTickAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            Codec.INT.fieldOf("delay").forGetter(ScheduleTickAction::delay)
+            ResourceReference.INT_CODEC.fieldOf("delay").forGetter(ScheduleTickAction::delay)
     ).apply(instance, ScheduleTickAction::new));
 
     @Override
@@ -23,6 +24,8 @@ public record ScheduleTickAction(int delay) implements BlockAction {
 
     @Override
     public void execute(@NotNull Level level, @NotNull BlockPos pos, @NotNull Optional<Direction> direction) {
-        level.scheduleTick(pos, level.getBlockState(pos).getBlock(), this.delay);
+        double resolved = this.delay.resolve(BlockAction.executionEntity());
+        int delay = resolved <= 0 ? 0 : resolved >= Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) resolved;
+        level.scheduleTick(pos, level.getBlockState(pos).getBlock(), delay);
     }
 }

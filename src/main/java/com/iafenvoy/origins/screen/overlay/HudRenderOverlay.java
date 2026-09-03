@@ -44,20 +44,26 @@ public enum HudRenderOverlay implements LayeredDraw.Layer {
         int barHeight = 8;
         int iconSize = 8;
 
-        for (HudRenderable h : holder.streamPowers(HudRenderable.class).filter(h -> h.getHudRenderData().isPresent()).sorted(Comparator.comparingInt(h -> h.getHudRenderData().get().order())).toList()) {
-            HudRender render = h.getHudRenderData().orElse(null);
-            if (render == null || !render.shouldRenderInActive() && !h.shouldRender(holder) || !render.condition().test(player))
+        for (HudRenderable h : holder.streamPowers(HudRenderable.class)
+                .map(h -> java.util.Map.entry(h, h.getHudRenderData().map(render -> render.getActive(player, h.shouldRender(holder))).orElse(null)))
+                .filter(entry -> entry.getValue() != null)
+                .sorted(Comparator.comparingDouble(entry -> entry.getValue().order().resolve(player)))
+                .map(java.util.Map.Entry::getKey)
+                .toList()) {
+            HudRender render = h.getHudRenderData().flatMap(data -> java.util.Optional.ofNullable(data.getActive(player, h.shouldRender(holder)))).orElse(null);
+            if (render == null)
                 continue;
             //Rendering
             ResourceLocation currentLocation = render.spriteLocation();
             graphics.blit(currentLocation, x, y, 0, 0, barWidth, 5);
-            int v = 8 + render.barIndex() * 10;
+            int barV = 8 + (int) render.barIndex().resolve(player) * 10;
+            int iconV = 8 + (int) render.iconIndex().resolve(player) * 10;
             float fill = h.getRenderPercentage(holder);
             if (render.inverted()) fill = 1f - fill;
             int w = (int) (fill * barWidth);
-            graphics.blit(currentLocation, x, y - 2, 0, v, w, barHeight);
+            graphics.blit(currentLocation, x, y - 2, 0, barV, w, barHeight);
             // this.setBlitOffset(this.getBlitOffset() + 1);
-            graphics.blit(currentLocation, x - iconSize - 2, y - 2, 73, v, iconSize, iconSize);
+            graphics.blit(currentLocation, x - iconSize - 2, y - 2, 73, iconV, iconSize, iconSize);
             // this.setBlitOffset(this.getBlitOffset() - 1);
             y -= 8;
         }
